@@ -8,8 +8,8 @@ const router = Router();
 router.post(
   "/",
   [
-    check("email", "El correo es obligatorio").isEmail(),
-    check("password", "La contraseña es obligatoria").not().isEmpty(),
+    check("amount", "The amount must be numeric.").isNumeric(),
+    check("amount", "The amount is required.").not().isEmpty(),
     validarCampos,
   ],
   setPayment
