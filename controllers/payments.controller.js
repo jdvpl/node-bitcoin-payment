@@ -1,6 +1,6 @@
-const { response, request } = require("express");
-const { Client, resources } = require("coinbase-commerce-node");
-const { COINBASE_API_KEY } = require("../config");
+const { response, request, json } = require("express");
+const { Client, resources, Webhook } = require("coinbase-commerce-node");
+const { COINBASE_API_KEY, COINBASE_WEBHOOK_SECRET } = require("../config");
 Client.init(COINBASE_API_KEY);
 
 const { Charge } = resources;
@@ -13,7 +13,7 @@ const setPayment = async (req = request, res = response) => {
       name: "Payment suscription",
       description: "My month suscription",
       organization_name: "ECCA",
-      brand_logo_url: "https://rapidfast-53b54.web.app/favicon.ico",
+      logo_url: "https://rapidfast-53b54.web.app/favicon.ico",
       local_price: {
         amount: amount,
         currency: "USD",
@@ -34,6 +34,29 @@ const setPayment = async (req = request, res = response) => {
   }
 };
 
-const getPaymentStatus = (req, res) => {};
+const getPaymentStatus = async (req, res) => {
+  const rawBody = req.rawBody;
+  const signature = req.headers["x-cc-webhook-signature"];
+  const webhookSecret = COINBASE_WEBHOOK_SECRET;
+
+  let event;
+  try {
+    event = Webhook.verifyEventBody(rawBody, signature, webhookSecret);
+    console.log(event.data.id);
+    console.log(event.type);
+    if (event.type === "charge:pending") {
+      console.log("pago pendiente");
+    }
+    if (event.type === "charge:failed") {
+      console.log("pago failed");
+    }
+    if (event.type === "charge:confirmed") {
+      console.log("pago confirmed");
+    }
+    return res.status(200).json(event.id);
+  } catch (error) {
+    return res.status(500).json({ mgs: error.message });
+  }
+};
 
 module.exports = { setPayment, getPaymentStatus };

@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
 class Server {
   constructor() {
     this.app = express();
@@ -27,7 +28,14 @@ class Server {
   middlewares() {
     // usar cors
     this.app.use(cors());
-
+    this.app.use(
+      express.json({
+        verify: (req, res, buf) => {
+          req.rawBody = buf;
+        },
+      })
+    );
+    this.app.use(morgan("dev"));
     // parseo de la info del body
     this.app.use(express.json());
     // directorio publico
