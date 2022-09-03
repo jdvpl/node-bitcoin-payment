@@ -3,7 +3,7 @@ const { Client, resources, Webhook } = require("coinbase-commerce-node");
 const { COINBASE_API_KEY, COINBASE_WEBHOOK_SECRET } = require("../config");
 Client.init(COINBASE_API_KEY);
 
-const { Charge } = resources;
+const { Charge, Event } = resources;
 
 const setPayment = async (req = request, res = response) => {
   const { amount } = req.body;
@@ -44,6 +44,15 @@ const getPaymentStatus = async (req, res) => {
     event = Webhook.verifyEventBody(rawBody, signature, webhookSecret);
     console.log(event.data.id);
     console.log(event.type);
+    console.log(event.resource);
+    console.log(event);
+    Event.retrieve(
+      "afc7f17b-507a-4e75-88cb-9f4e994f9f1f",
+      function (err, response) {
+        console.log("error: " + err);
+        console.log("succcess" + JSON.stringify(response));
+      }
+    );
     if (event.type === "charge:pending") {
       console.log("pago pendiente");
     }
