@@ -16,7 +16,7 @@ const setPayment = async (req = request, res = response) => {
       logo_url: "https://rapidfast-53b54.web.app/favicon.ico",
       local_price: {
         amount: amount,
-        currency: "USD",
+        currency: "USDT",
       },
       pricing_type: "fixed_price",
       metadata: {
